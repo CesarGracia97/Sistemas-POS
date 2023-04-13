@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Layout = () =>{
+const Layout = (props) => {
     return (
         <div>
             <header className='bg-gray-900 shadow'>
@@ -10,7 +10,7 @@ const Layout = () =>{
             </header>
             <main>
                 <div className='mx-auto py-6'>
-                    contenido
+                    {props.children}
                 </div>
             </main>
         </div>
