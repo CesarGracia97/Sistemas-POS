@@ -11,6 +11,8 @@ import { info } from 'autoprefixer'
 
 const DataTable = () => {
   const [data, setData] = useState(defaultData)
+  const [globalFilter, setGlobalFiter] = useState('')
+  console.log(globalFilter);
 
   const columns = [
     {
@@ -52,6 +54,13 @@ const DataTable = () => {
 
   return (
     <div className='px-6 py-4'>
+      <div className='my-2 text-right'>
+        <input 
+        type="text"
+        onChange={e => setGlobalFiter(e.target.value)}
+        className='p-2 text-gray-600 border border-gray-300 rounded outline-indigo-700'
+        placeholder='Buscar...'/>
+      </div>
       <table className='table-auto w-full'>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
