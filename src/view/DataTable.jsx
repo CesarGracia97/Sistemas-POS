@@ -71,10 +71,29 @@ const DataTable = () => {
     }
   ]
 
+  const getStateTable = () => {
+    const totalRows = table.getFilteredRowModel().rows.length;
+    const pageSize = table.getState().pagination.pageSize;
+    const pageIndex = table.getState().pagination.pageIndex;
+    const  rowsPerPage =  table.getRowModel().rows.length;
+
+    const firstIndex = (pageIndex * pageSize) + 1;
+    const lastIndex = (pageIndex * pageSize) + rowsPerPage;
+
+    return {
+      totalRows,  firstIndex, lastIndex
+    }
+  }
+
   const table = useReactTable({
     data,
     columns,
     state:{ globalFilter },
+    initialState: {
+      pagination:{
+        pageSize: 5
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -169,15 +188,16 @@ const DataTable = () => {
           </button>
         </div>
         <div className='text-gray-600 font-semibold'>
-            Mostrando de {Number(table.getRowModel().rows[0]?.id) + 1}&nbsp; 
-            a {Number(table.getRowModel().rows[table.getRowModel().rows.length - 1]?.id) + 1}&nbsp;
-            del total de {defaultData.length} registros
+            Mostrando de {getStateTable().firstIndex}&nbsp; 
+            a {getStateTable().lastIndex}&nbsp;
+            del total de {getStateTable().totalRows} registros
         </div>
         <select 
         className='text-gray-600 border border-gray-300 rounded outline-indigo-700'
         onChange={e => {
           table.setPageSize(Number(e.target.value))
         }}>
+          <option value="5">5 pág.</option>
           <option value="10">10 pág.</option>
           <option value="20">20 pág.</option>
           <option value="25">25 pág.</option>
