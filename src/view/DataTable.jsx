@@ -10,6 +10,16 @@ import {
 import { defaultData } from '../utils/defaultData'
 import classNames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
+import { 
+  BarsArrowUpIcon, 
+  BarsArrowDownIcon, 
+  MagnifyingGlassIcon, 
+  ChevronUpDownIcon, 
+  ChevronDoubleLeftIcon, 
+  ChevronDoubleRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
+} from '@heroicons/react/24/solid'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row. getValue(columnId), value)
@@ -70,18 +80,20 @@ const DataTable = () => {
           </span>
         )
       },
-      enableSorting: false
+      enableSorting: true
     },
     {
+      accessorKey: 'actions',
       header: 'Acciones',
       cell: info => {
         return (
-          <div>
-            <button>Eliminar</button>
-            <button>Editar</button>
+          <div className='space-x-2'>
+            <button className='text-red-600'>Eliminar</button>
+            <button className='text-blue-600'>Editar</button>
           </div>
         )
-      }
+      },
+      enableSorting: false
     }
   ]
 
@@ -118,75 +130,81 @@ const DataTable = () => {
 
   return (
     <div className='px-6 py-4'>
-      <div className='my-2 text-right'>
-        <DebouncedInput
-        type = "text"
-        value = {globalFilter ?? ''}
-        onChange = {value => setGlobalFiter(String(value))}
-        className = 'p-2 text-gray-600 border border-gray-300 rounded outline-indigo-700'
-        placeholder = 'Buscar...'
-        />
+      <div className='my-2 flex justify-end'>
+        <div className='relative'>
+          <DebouncedInput
+            type = "text"
+            value = {globalFilter ?? ''}
+            onChange = {value => setGlobalFiter(String(value))}
+            className = 'px-6 py-2 text-gray-600 border border-gray-300 rounded outline-indigo-700'
+            placeholder = 'Buscar...'
+          />
+        <MagnifyingGlassIcon className='w-5 h-5 absolute top-3 left-1'/>
+        </div>
       </div>
-      <table className='table-auto w-full'>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id} className="border-b border-gray-300 text-gray-600 bg-gray-100" >
-              {headerGroup.headers.map(header => (
-                <th key={header.id} className="py-2 px-4 text-left uppercase">
-                  {header.isPlaceholder
-                    ? null
-                    : <div className={classNames({
-                      'cursor-pointer select-none':header.column.getCanSort(),
-                    })}
-                    onClick={header.column.getToggleSortingHandler()}>
-                      {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {
+      <div className='overflow-auto'>
+        <table className='table-auto w-full min-w-[560px]'>
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id} className="border-b border-gray-300 text-gray-600 bg-gray-100" >
+                {headerGroup.headers.map(header => (
+                  <th key={header.id} className="py-2 px-4 text-left uppercase">
+                    {header.isPlaceholder
+                      ? null
+                      : <div className={classNames({
+                        'cursor-pointer select-none flex justify-between':header.column.getCanSort(),
+                      })}
+                      onClick={header.column.getToggleSortingHandler()}>
+                        {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                       {
-                        asc: ' 🔼',
-                        desc: ' 🔽'
+                        {
+                          asc: <BarsArrowUpIcon className='w-5 h-5'/>,
+                          desc: <BarsArrowDownIcon className='w-5 h-5'/>
+                        }
+                        [header.column.getIsSorted()] ?? 
+                        (header.column.getCanSort() ? <ChevronUpDownIcon className='w-5 h-5'/>: null)
                       }
-                      [header.column.getIsSorted()] ?? null
+                      </div>
                     }
-                    </div>
-                  }
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className="text-gray-600 hover:bg-slate-100" >
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="py-2 px-4" >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className='mt-4 flex items-center justify-between'>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id} className="text-gray-600 hover:bg-slate-100" >
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id} className="py-2 px-4" >
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className='mt-4 md:flex items-center justify-between space-y-4 text-center'>
         <div className='flex items-center gap-2'>
           <button
             className='text-gray-600 bg-gray-200 py-0.5 px-1 rounded border border-gray-300
             disabled:hover:bg-white disabled:hover:text-gray-300'
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}>
-            {'<<'}
+            <ChevronDoubleLeftIcon className='w-5 h-5'/>
           </button>
           <button
             className='text-gray-600 bg-gray-200 py-0.5 px-1 rounded border border-gray-300
             disabled:hover:bg-white disabled:hover:text-gray-300'
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}>
-            {'<'}
+            <ChevronLeftIcon className='w-5 h-5'/>
           </button>
 
           {table.getPageOptions().map((value, key) => (
@@ -205,14 +223,14 @@ const DataTable = () => {
             disabled:hover:bg-white disabled:hover:text-gray-300'
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}>
-            {'>'}
+            <ChevronRightIcon className='w-5 h-5'/>
           </button>
           <button
             className='text-gray-600 bg-gray-200 py-0.5 px-1 rounded border border-gray-300
             disabled:hover:bg-white disabled:hover:text-gray-300'
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}>
-            {'>>'}
+            <ChevronDoubleRightIcon className='w-5 h-5'/>
           </button>
         </div>
         <div className='text-gray-600 font-semibold'>

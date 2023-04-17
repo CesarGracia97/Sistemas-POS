@@ -4,6 +4,7 @@
 3. TanStack (npm install @tanstack/react-table)
 4. Classnames (npm install classnames)
 5. Tanstack/match-sorter-utils (npm i @tanstack/match-sorter-utils)
+6. Heroicons (npm install @heroicons/react)
 
 (O si no quiere complicarse la vida instalando paquete por paquete, tranquilamente un `npm install` y ya)
 
