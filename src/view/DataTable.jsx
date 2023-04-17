@@ -4,7 +4,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  getFilteredRowModel
+  getFilteredRowModel,
+  getSortedRowModel
 } from '@tanstack/react-table'
 import { defaultData } from '../utils/defaultData'
 import classNames from 'classnames'
@@ -38,6 +39,7 @@ const  DebouncedInput = ({value: keyWord, onChange, ...props}) =>{
 const DataTable = () => {
   const [data, setData] = useState(defaultData)
   const [globalFilter, setGlobalFiter] = useState('')
+  const [sorting, setSorting] = useState([])
   console.log(globalFilter);
 
   const columns = [
@@ -67,6 +69,18 @@ const DataTable = () => {
             {info.getValue()}
           </span>
         )
+      },
+      enableSorting: false
+    },
+    {
+      header: 'Acciones',
+      cell: info => {
+        return (
+          <div>
+            <button>Eliminar</button>
+            <button>Editar</button>
+          </div>
+        )
       }
     }
   ]
@@ -88,7 +102,7 @@ const DataTable = () => {
   const table = useReactTable({
     data,
     columns,
-    state:{ globalFilter },
+    state:{ globalFilter, sorting },
     initialState: {
       pagination:{
         pageSize: 5
@@ -97,7 +111,9 @@ const DataTable = () => {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: fuzzyFilter
+    globalFilterFn: fuzzyFilter,
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting
   })
 
   return (
@@ -119,10 +135,22 @@ const DataTable = () => {
                 <th key={header.id} className="py-2 px-4 text-left uppercase">
                   {header.isPlaceholder
                     ? null
-                    : flexRender(
+                    : <div className={classNames({
+                      'cursor-pointer select-none':header.column.getCanSort(),
+                    })}
+                    onClick={header.column.getToggleSortingHandler()}>
+                      {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    )
+                    )}
+                    {
+                      {
+                        asc: ' 🔼',
+                        desc: ' 🔽'
+                      }
+                      [header.column.getIsSorted()] ?? null
+                    }
+                    </div>
                   }
                 </th>
               ))}

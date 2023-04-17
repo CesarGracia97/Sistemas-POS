@@ -5,5 +5,7 @@
 4. Classnames (npm install classnames)
 5. Tanstack/match-sorter-utils (npm i @tanstack/match-sorter-utils)
 
+(O si no quiere complicarse la vida instalando paquete por paquete, tranquilamente un `npm install` y ya)
+
 # Ejecucion
 ### `npm run dev`
