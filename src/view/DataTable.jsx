@@ -3,11 +3,18 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel
+  getPaginationRowModel,
+  getFilteredRowModel
 } from '@tanstack/react-table'
 import { defaultData } from '../utils/defaultData'
 import classNames from 'classnames'
-import { info } from 'autoprefixer'
+import { rankItem } from '@tanstack/match-sorter-utils'
+
+const fuzzyFilter = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row. getValue(columnId), value)
+  addMeta({itemRank})
+  return itemRank.passed
+}
 
 const DataTable = () => {
   const [data, setData] = useState(defaultData)
@@ -48,8 +55,11 @@ const DataTable = () => {
   const table = useReactTable({
     data,
     columns,
+    state:{ globalFilter },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: fuzzyFilter
   })
 
   return (
@@ -138,8 +148,8 @@ const DataTable = () => {
           </button>
         </div>
         <div className='text-gray-600 font-semibold'>
-            Mostrando de {Number(table.getRowModel().rows[0].id) + 1}&nbsp; 
-            a {Number(table.getRowModel().rows[table.getRowModel().rows.length - 1].id) + 1}&nbsp;
+            Mostrando de {Number(table.getRowModel().rows[0]?.id) + 1}&nbsp; 
+            a {Number(table.getRowModel().rows[table.getRowModel().rows.length - 1]?.id) + 1}&nbsp;
             del total de {defaultData.length} registros
         </div>
         <select 
