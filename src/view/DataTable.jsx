@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -14,6 +14,25 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row. getValue(columnId), value)
   addMeta({itemRank})
   return itemRank.passed
+}
+
+const  DebouncedInput = ({value: keyWord, onChange, ...props}) =>{
+  const [value, setValue] = useState(keyWord);
+  //console.log(value);
+
+  useEffect(()=>{
+    const  timeout = setTimeout(() => { //se temporiza la buqueda
+      console.log('Filterd');
+      onChange(value);
+    },500)
+
+    return () => clearTimeout(timeout);
+
+  }, [value])
+
+  return(
+    <input {...props}  value ={value} onChange={e =>setValue(e.target.value)}/>
+  )
 }
 
 const DataTable = () => {
@@ -65,11 +84,13 @@ const DataTable = () => {
   return (
     <div className='px-6 py-4'>
       <div className='my-2 text-right'>
-        <input 
-        type="text"
-        onChange={e => setGlobalFiter(e.target.value)}
-        className='p-2 text-gray-600 border border-gray-300 rounded outline-indigo-700'
-        placeholder='Buscar...'/>
+        <DebouncedInput
+        type = "text"
+        value = {globalFilter ?? ''}
+        onChange = {value => setGlobalFiter(String(value))}
+        className = 'p-2 text-gray-600 border border-gray-300 rounded outline-indigo-700'
+        placeholder = 'Buscar...'
+        />
       </div>
       <table className='table-auto w-full'>
         <thead>
